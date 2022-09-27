@@ -7,6 +7,7 @@ const Op = db.Sequelize.Op;
 
 const { Sequelize, DataTypes } = require('sequelize');
 const { query } = require("express");
+//↓ para alterar las tablas, es necesario cambiar lo que está dentro de Sequelize(), ya que necesita el permiso del host↓
 const sequelize = new Sequelize('itickets', 'root', 'ricardouv', {host: 'localhost', dialect: 'mysql'});
 const queryInterface = sequelize.getQueryInterface();
 
