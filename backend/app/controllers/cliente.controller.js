@@ -1,60 +1,83 @@
 //se importan las dependencias
 const db = require("../models");
 const Cliente = db.cliente;
+const Administrador = db.administrador;
 const Usuario = db.usuario;
 const Op = db.Sequelize.Op;
 
-const { Sequelize, DataTypes } = require('sequelize');
-//↓ para alterar las tablas, es necesario cambiar lo que está dentro de Sequelize(), ya que necesita el permiso del host↓
-const sequelize = new Sequelize('itickets', 'root', 'ricardouv', {host: 'localhost', dialect: 'mysql'});
-const queryInterface = sequelize.getQueryInterface();
-
 //para crear un cliente
 exports.crearCliente = async (req, res) => {
-    //se valida que se ingreso un rut
-    if(!req.body.rutUsuario){
-        res.status(400).send({
-            message: "Debe ingresar un rut de usuario",
-        });
-        return;
-    }
-    //promesa de buscar al usuario y comprobar si es cliente o administrador
+
+    if(!req.body.rut || !req.body.nombre || !req.body.primerApellido || !req.body.primerApellido || !req.body.segundoApellido || 
+        !req.body.contrasenia || !req.body.confirmarContrasenia || !req.body.numeroContacto || !req.body.mailContacto){
+
+        return res.status(400).send({
+            error: "Debe rellenar todos los campos"})
+        }
+
+    if(req.body.contrasenia != req.body.confirmarContrasenia){
+        return res.status(400).send({
+            error: "Contrasenas no coinciden"})
+        }
+
     try{
-        let user = await Usuario.findByPk(req.body.rutUsuario);
-        let clientUser = await user.getClient()
-        if(clientUser){
-            res.send("El rut ingresado ya corresponde a un cliente")
+        let client = await Cliente.findByPk(req.body.rut);
+        if(client){
+            res.send("El rut ya corresponde a un cliente")
             return;
         }
 
-        let adminUser = await user.getAdministrator()
-        if(adminUser){
-            res.send("El usuario no puede ser cliente.\nYa se encuentra registrado como administrador")
+        let admin = await Administrador.findByPk(req.body.rut);
+        if(admin){
+            res.send("El rut corresponde a un administrador")
             return;
         }
 
     }catch{
-        res.status(400).send({
-            message: "Error al encontrar el usuario asociado al rut",
-        });
-        return;
+        return res.status(400).send({
+            error: "Error en la consulta"})
     }
 
-    const dataCliente = {
-        userRut: req.body.rutUsuario,
+    const dataUser = {
+        rut: req.body.rut,
+        primer_nombre: req.body.nombre,
+        primer_apellido: req.body.primerApellido,
+        segundo_apellido: req.body.segundoApellido,
+        contrasenia: req.body.contrasenia,
+    };
+
+    const dataClient = {
+        userRut: req.body.rut,
         num_contacto: req.body.numeroContacto,
-        mail_contacto: req.body.mailContacto
-    }
-    
-    //promesa para definir al cliente
+        mail_contacto: req.body.mailContacto,
+    };
+
     try{
-        let client = await Cliente.create(dataCliente)
-        res.send("Cliente definido")
+        let user = await Usuario.create(dataUser)
+        let client = await Cliente.create(dataClient);
+        
+        let findClient = await Usuario.findOne({
+            where: {
+                rut: user.rut
+            },
+            include: {
+                model: Cliente,
+                attributes: ['num_contacto', 'mail_contacto']
+            },
+            attributes: {exclude: ['createdAt', 'updatedAt']}
+            
+        })
+
+        res.send(findClient);
+        return;
+
+
     }catch{
-        res.status(400).send({
-            message: "Error al crear al cliente",
-        });
+        return res.status(400).send({
+            error: "Error al crear al cliente"})
+
     }
+
 };
 
 //retornar todos los clientes y sus datos (excepto su contrasena)
@@ -66,7 +89,7 @@ exports.obtenerClientes = async (req, res) => {
                 {
                     model: Cliente,
                     required: true,
-                    //attributes: ['num_contacto', 'mail_contacto']
+                    attributes:  ['num_contacto', 'mail_contacto']
                 }
             ],
             attributes: ['rut','primer_nombre','primer_apellido','segundo_apellido']
@@ -81,19 +104,3 @@ exports.obtenerClientes = async (req, res) => {
     }
    
 };
-
-//añadir columna "tickets_vigentes"
-exports.crearColumnaTicketsVigentes = async (req, res) => {
-
-    try{
-        let alter = await queryInterface.addColumn('clients', 'tickets_vigentes', {type: DataTypes.INTEGER, defaultValue: 0});
-        let syncro = await sequelize.sync({alter: true});
-        res.send('Columna añadida!')
-        return;
-    }catch{
-        res.status(400).send({
-            message: "Error",
-        });
-        return;
-    }
-}; 

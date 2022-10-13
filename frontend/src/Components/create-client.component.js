@@ -4,9 +4,9 @@ import ClientDataService from "../Services/client.service";
 import ClientForm from "./ClientForm";
   
 const CreateClient = () => {
-  const [formValues, setFormValues] = useState({ name: '', address: '', email: '' })
+  const [formValues, setFormValues] = useState({ userRut: '', primer_nombre: '', primer_apellido: '', segundo_apellido: '', contrasenia: '', num_contacto: '', mail_contacto:''})
   const onSubmit = clientObject => {
-    ClientDataService.create(clientObject)
+    ClientDataService.crearCliente(clientObject)
       .then(res => {
         if (res.status === 200)
           alert('Client successfully created')
@@ -21,7 +21,7 @@ const CreateClient = () => {
     <ClientForm initialValues={formValues} 
       onSubmit={onSubmit} 
       enableReinitialize>
-      Create client
+      Crear cliente
     </ClientForm>
   )
 }

@@ -1,5 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
     const Usuario = sequelize.define("user", {
+
       rut: {
         type: Sequelize.STRING(12),
         primaryKey: true,

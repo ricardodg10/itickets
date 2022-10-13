@@ -1,5 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
     const Event = sequelize.define("event", {
+
       nombre_evento: {
         allowNull: false,
         type: Sequelize.STRING(25),
@@ -21,9 +22,17 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         type: Sequelize.STRING(25),
       },
-      fecha_evento: {
+      dia_evento: {
         allowNull: false,
-        type: Sequelize.DATEONLY,
+        type: Sequelize.INTEGER,
+      },
+      mes_evento: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      anio_evento: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
       },
       hora_evento: {
         allowNull: false,

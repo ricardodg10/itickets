@@ -1,5 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
     const Cliente = sequelize.define("client", {
+
       num_contacto: {
         type: Sequelize.INTEGER,
         allowNull: false,

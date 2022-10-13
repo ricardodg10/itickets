@@ -2,108 +2,83 @@
 const db = require("../models");
 const Administrador = db.administrador;
 const Usuario = db.usuario;
+const Cliente = db.cliente;
 const Evento = db.evento;
-const Op = db.Sequelize.Op;
+const Ticket = db.ticket;
+const Sequelize = db.Sequelize;
 
-const { Sequelize, DataTypes } = require('sequelize');
-const { query } = require("express");
-const sequelize = new Sequelize('itickets', 'root', 'ricardouv', {host: 'localhost', dialect: 'mysql'});
-const queryInterface = sequelize.getQueryInterface();
+//para crear un cliente
+exports.crearAdministrador = async (req, res) => {
 
-//para crear un administrador
-exports.create = async (req, res) => {
+    if(!req.body.rut || !req.body.nombre || !req.body.primerApellido || !req.body.primerApellido || !req.body.segundoApellido || 
+        !req.body.contrasenia || !req.body.confirmarContrasenia){
 
-    //para crear un usuario
-exports.crearUsuario = async (req, res) => {
-    //validar el ingreso de un usuario 
-    if(!req.body.rut || !req.body.primerNombre || !req.body.primerApellido || !req.body.segundoApellido || !req.body.contrasenia){
-        res.status(400).send({
-            message: "Debe rellenar todos los campos"
-        });
-        return;
-    } 
+        return res.status(400).send({
+            error: "Debe rellenar todos los campos"})
+    }
+
+    if(req.body.contrasenia != req.body.confirmarContrasenia){
+        return res.status(400).send({
+            error: "Contrasenas no coinciden"})
+    }
+
 
     try{
-        let usuarioEncontrado = await Usuario.findByPk(req.body.rut)
-        if(usuarioEncontrado){
-            res.send("El rut ingresado ya está registrado en un usuario")
+        let admin = await Administrador.findByPk(req.body.rut);
+        if(admin){
+            res.send("El rut ya corresponde a un administrador")
             return;
         }
+
+        let client = await Cliente.findByPk(req.body.rut);
+        if(client){
+            res.send("El rut corresponde a un cliente")
+            return;
+        }
+
     }catch{
-        res.status(400).send({
-            message: "Error en la comprobacion de rut en los registros"
-        });
+        return res.status(400).send({
+            error: "Error en la consulta"})
     }
-    //instanciar un usuario
-    const usuario = {
+
+    const dataUser = {
         rut: req.body.rut,
-        primer_nombre: req.body.primerNombre,
+        primer_nombre: req.body.nombre,
         primer_apellido: req.body.primerApellido,
         segundo_apellido: req.body.segundoApellido,
-        contrasenia: req.body.contrasenia
+        contrasenia: req.body.contrasenia,
     };
 
-    //guardar usuario en la base de datos
-    Usuario.create(usuario)
-        .then(data=> {
-            res.send(data);
-        })
-        .catch(err=> {
-            res.status(500).send({
-                message:
-                    err.message || "Error al ingresar un usuario"
-            });
-        });
+    const dataAdmin = {
+        userRut: req.body.rut,
+        anios_experiencia: req.body.aniosExperiencia,
+    };
 
+    try{
+        let user = await Usuario.create(dataUser)
+        let admin = await Administrador.create(dataAdmin);
         
+        let findAdmin = await Usuario.findOne({
+            where: {
+                rut: user.rut
+            },
+            include: {
+                model: Administrador,
+                attributes: ['anios_experiencia']
+            },
+            attributes: {exclude: ['createdAt', 'updatedAt']}
+            
+        })
+
+        res.send(findAdmin);
+        return;
+
+    }catch{
+        return res.status(400).send({
+            error: "Error al crear al administrador"})
+    }
 };
 
-
-    //se valida que se ingreso un rut
-    if(!req.body.rutUsuario){
-        res.status(400).send({
-            message: "Debe ingresar un rut de usuario",
-        });
-        return;
-    }
-
-    //promesa de buscar al usuario y comprobar si es cliente o administrador
-    try{
-        let user = await Usuario.findByPk(req.body.rutUsuario);
-        let adminUser = await user.getAdministrator()
-        if(adminUser){
-            res.send("El rut ingresado ya corresponde a un administrador.")
-            return;
-        }
-
-        let clientUser = await user.getClient()
-        if(clientUser){
-            res.send("El usuario no puede ser administrador.\nYa se encuentra registrado como cliente.")
-            return;
-        }
-    }catch{
-        res.status(400).send({
-            message: "Error al encontrar el usuario asociado al rut",
-        });
-        return;
-    }
-
-    const dataAdministrador = {
-        userRut: req.body.rutUsuario,
-        anios_experiencia: req.body.aniosExperiencia
-    }
-    
-    //promesa para definir al administrador
-    try{
-        let admin = await Administrador.create(dataAdministrador)
-        res.send("Administrador definido")
-    }catch{
-        res.status(400).send({
-            message: "Error al crear al administrador",
-        });
-        return;
-    }
-};
 
 //retornar todos los administradores y sus datos (excepto su contrasena)
 exports.obtenerAdministradores = async (req, res) => {
@@ -129,13 +104,11 @@ exports.obtenerAdministradores = async (req, res) => {
     }
 };
 
-//retornar los administradores, sus eventos y la cantidad de tickets disponibles
+//retornar los administradores, sus eventos
 
 exports.obtenerAdminEventosTickets = async (req, res) => {
-
-
-    try{
-        let admins = await Usuario.findAll({
+ 
+        Usuario.findAll({
             include: [
                 {
                     model: Administrador,
@@ -144,32 +117,36 @@ exports.obtenerAdminEventosTickets = async (req, res) => {
                         {
                         model: Evento,
                         required: true,
-                        attributes: ['nombre_evento'],
+                        attributes: {
+                            include: [[Sequelize.fn("COUNT", Sequelize.col("id_ticket")), "cantidad_tickets"]],
+                            /*exclude: ['tipo_evento', 'direccion_evento', 'ciudad_evento', 'region_evento', 'dia_evento', 'mes_evento', 'anio_evento', 
+                            'hora_evento', 'precio_evento', 'descripcion_evento', 'createdAt', 'updatedAt', 'administratorUserRut']*/
+                        },
+                        include: [ 
+                            {
+                                model: Ticket,
+                                required: true,
+                                attributes : [],
+                                /*where: { 
+                                    'nombre_evento': 'eventNombreEvento'
+                                },*/
+                            }
+                        ],
                         }
                     ],
+                    
                     attributes: ['userRut'],
+  
                 }
             ],
             attributes: ['primer_nombre','primer_apellido','segundo_apellido'],
+        }).then(result => {
+            res.send(result)
+        }).catch(err => {
+            res.status(400).send({
+                message: "Error en la consulta",
+            });
         })
-        res.send(admins)
-
-        return;
-
-    }catch{
-        res.status(400).send({
-            message: "Error al obtener los administradores",
-        });
-        return;
-    }
-}
-
-//añadir columna "eventos_vigentes"
-exports.crearColumnaEventosVigentes = async (req, res) => {
-
-    queryInterface.addColumn('administrators', 'eventos_vigentes', {type: DataTypes.INTEGER, defaultValue: 0});
-    res.send('Columna añadida!')
-    return;
 };
 
 

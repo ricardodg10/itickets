@@ -27,10 +27,12 @@ const ClientList = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>address</th>
-            <th>email</th>
-            <th>Action</th>
+            <th>Rut</th>
+            <th>Nombre</th>
+            <th>Primer apellido</th>
+            <th>Segundo apellido</th>
+            <th>Número de contacto</th>
+            <th>Mail de contacto</th>
           </tr>
         </thead>
         <tbody>{DataTable()}</tbody>

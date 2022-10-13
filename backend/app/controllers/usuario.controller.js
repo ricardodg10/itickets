@@ -143,7 +143,7 @@ exports.cambiarContrasenia = async (req, res) => {
                 });
                 await usuario.save();
 
-                res.send('Contrasena actualizada')
+                res.send(usuario)
                 return;
 
             }else{

@@ -25,26 +25,33 @@ const App = () => {
           <Navbar bg="dark" variant="dark">
             <Container>
               <Navbar.Brand>
-                <Link to={"/create-client"} 
-                  className="nav-link">
-                  React App
-                </Link>
+                i-Tickets
               </Navbar.Brand>
   
               <Nav className="justify-content-end">
-                <Nav>
-                  <Link to={"/create-client"} 
+
+              <Nav>
+                  <Link to={"/crear-cliente"} 
                     className="nav-link">
-                    Create Client
+                    Inicio
+                  </Link>
+                </Nav>
+
+                <Nav>
+                  <Link to={"/crear-cliente"} 
+                    className="nav-link">
+                    Crear cliente
                   </Link>
                 </Nav>
   
                 <Nav>
                   <Link to={"/client-list"} 
                     className="nav-link">
-                    Client List
+                    Lista de clientes
                   </Link>
                 </Nav>
+
+                
               </Nav>
             </Container>
           </Navbar>
@@ -56,7 +63,7 @@ const App = () => {
               <div className="wrapper">
                 <Switch>
                   <Route exact path="/" component={ClientList} />
-                  <Route path="/create-client" component={CreateClient} />
+                  <Route path="/crear-cliente" component={CreateClient} />
                   <Route path="/edit-client/:id" component={EditClient} />
                   <Route path="/client-list" component={ClientList} />
                 </Switch>

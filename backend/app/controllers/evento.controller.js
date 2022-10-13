@@ -9,7 +9,7 @@ const Op = db.Sequelize.Op;
 
 exports.crearEvento = async (req, res) => {
     //validar el ingreso de todos los datos del evento
-    if(!req.body.tipo || !req.body.nombre || !req.body.direccion || !req.body.ciudad || !req.body.region || !req.body.fecha || !req.body.hora || !req.body.descripcion || !req.body.rutAdministrador || !req.body.cantidadDeTickets){
+    if(!req.body.tipo || !req.body.nombre || !req.body.direccion || !req.body.ciudad || !req.body.region || !req.body.dia || !req.body.mes || !req.body.anio || !req.body.hora || !req.body.descripcion || !req.body.rutAdministrador || !req.body.cantidadDeTickets){
         res.status(400).send({
             message: "Debe rellenar todos los campos"
         });
@@ -45,7 +45,9 @@ exports.crearEvento = async (req, res) => {
         direccion_evento: req.body.direccion,
         ciudad_evento: req.body.ciudad,
         region_evento: req.body.region,
-        fecha_evento: req.body.fecha,
+        dia_evento: req.body.dia,
+        mes_evento: req.body.mes,
+        anio_evento: req.body.anio,
         hora_evento: req.body.hora,
         precio_evento: req.body.precio,
         descripcion_evento: req.body.descripcion,
@@ -62,8 +64,28 @@ exports.crearEvento = async (req, res) => {
         for (let i = 0; i<req.body.cantidadDeTickets; i++){
             let ticket = await Ticket.create(dataTicket)
         }
-
-        res.send("Evento creado")
+        
+        Evento.findOne({
+            where: {
+                nombre_evento: event.nombre_evento
+            },
+            attributes: {
+                exclude: ['createdAt','updatedAt']
+            },
+            include: [
+                {
+                    model: Ticket,
+                    attributes: ['id_ticket']
+                }
+            ]
+        }).then(data=>{
+            res.send(data)
+        }).catch(err => {
+            res.status(400).send({
+                message: "Error en la consulta",
+            });
+        });
+        
     }catch{
         res.status(400).send({
             message: "Error al crear el evento",
@@ -121,8 +143,7 @@ exports.eliminarEvento = async (req, res) => {
     }
 };
 
-//buscar eventos con filtros obligatorios y opcionales
-
+//buscar eventos con filtros obligatorios 
 exports.buscarEvento = async (req, res) => {
     
     if(!req.body.tipo, !req.body.region){
@@ -142,6 +163,36 @@ exports.buscarEvento = async (req, res) => {
             return;
         }
 
+        if(req.body.precioMaximo){
+            event = await Evento.findAll({where: {
+                precio_evento: {
+                    [Op.lte]: req.body.precioMaximo
+                }
+            }})
+        }
+
+        if(req.body.numeroMes){
+            event = await Evento.findAll({where: {
+                    mes_evento: {
+                        [Op.eq]: req.body.numeroMes
+                    }
+            }})
+        }
+
+        if(req.body.ciudad){
+            event = await Evento.findAll({where: {
+                ciudad_evento: req.body.ciudad
+            }})
+        }
+
+        if(req.body.nombre){
+            event = await Evento.findAll({where: {
+                nombre_evento: {
+                    [Op.like]: '%' + req.body.nombre + '%'
+                }
+            }})
+        }
+
         res.send(event)
         return;
 
@@ -151,8 +202,6 @@ exports.buscarEvento = async (req, res) => {
         });
         return;
     }
-
-
 };
 
 

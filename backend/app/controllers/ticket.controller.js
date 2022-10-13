@@ -1,13 +1,11 @@
 //se importan las dependencias
+const { usuario } = require("../models");
 const db = require("../models");
 const Cliente = db.cliente;
 const Ticket = db.ticket;
 const Op = db.Sequelize.Op;
 
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize('itickets', 'root', 'ricardouv', {host: 'localhost', dialect: 'mysql'});
-const queryInterface = sequelize.getQueryInterface();
-
+//asignar tickets un cliente
 exports.asignarTicket = async (req, res) => {
 
     if(!req.body.rutCliente || !req.body.nombreEvento || !req.body.cantidadDeTickets){
@@ -54,8 +52,30 @@ exports.asignarTicket = async (req, res) => {
                     await ticket.save();
                 }
 
-                res.send('Tickets asignados!')
-                return;
+                Cliente.findOne({
+                    where: {
+                        userRut: req.body.rutCliente
+                    },
+                    attributes: {
+                        exclude: ['createdAt','updatedAt']
+                    },
+                    include: [
+                        {
+                            model: Ticket,
+                            attributes: ['id_ticket', 'clientUserRut'],
+                            where: {
+                                eventNombreEvento: req.body.nombreEvento
+                            }
+                        }
+                    ]
+                }).then(data=>{
+                    res.send(data)
+                }).catch(err => {
+                    res.status(400).send({
+                        message: "Error en la consulta",
+                    });
+                });
+
             }catch{
                 res.status(400).send({
                     message: "Error en la solicitud",
@@ -76,7 +96,6 @@ exports.asignarTicket = async (req, res) => {
 };
 
 //eliminar tabla ticket
-
 exports.dropTicket = async(req, res) => {
     try{
         let drop = await queryInterface.dropTable('tickets');

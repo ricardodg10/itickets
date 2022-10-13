@@ -1,5 +1,9 @@
 import http from "./http-common";
 
+const crearCliente = data => {
+  return http.post("/clientes", data);
+};
+
 const getAll = () => {
   return http.get("/clients");
 };
@@ -31,7 +35,8 @@ const ClientService = {
   create,
   update,
   remove,
-  removeAll
+  removeAll,
+  crearCliente
 };
 
 export default ClientService;

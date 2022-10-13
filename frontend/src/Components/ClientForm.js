@@ -5,18 +5,27 @@ import { FormGroup, FormControl, Button } from "react-bootstrap";
   
 const ClientForm = (props) => {
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Required"),
-    address: Yup.string().required("Required"),
-    email: Yup.string()
-        .email("You have enter an invalid email address")
-        .required("Required"),
+    userRut: Yup.string().required("Required"),
+    primer_nombre: Yup.string().required("Required"),
+    primer_apellido: Yup.string().required("Required"),
+
   });
   return (
     <div className="form-wrapper">
       <Formik {...props} validationSchema={validationSchema}>
         <Form>
+        <></>
+        <FormGroup>
+            <Field name="userRut" type="text" placeholder="Rut"
+                className="form-control" />
+            <ErrorMessage
+              name="rut"
+              className="d-block invalid-feedback"
+              component="span"
+            />
+          </FormGroup>
           <FormGroup>
-            <Field name="name" type="text" 
+            <Field name="primer_nombre" type="text" placeholder="Nombre"
                 className="form-control" />
             <ErrorMessage
               name="name"
@@ -25,7 +34,7 @@ const ClientForm = (props) => {
             />
           </FormGroup>
           <FormGroup>
-            <Field name="address" type="text" 
+            <Field name="primer_apellido" type="text" placeholder="Primer apellido"
                 className="form-control" />
             <ErrorMessage
               name="address"
@@ -34,7 +43,7 @@ const ClientForm = (props) => {
             />
           </FormGroup>
           <FormGroup>
-            <Field name="email" type="text" 
+            <Field name="segundo_apellido" type="text" placeholder="Segundo apellido"
                 className="form-control" />
             <ErrorMessage
               name="email"
@@ -42,7 +51,35 @@ const ClientForm = (props) => {
               component="span"
             />
           </FormGroup>
-          <Button variant="danger" size="lg" 
+          <FormGroup>
+            <Field name="num_contacto" type="number" placeholder="Número de contacto"
+                className="form-control" />
+            <ErrorMessage
+              name="email"
+              className="d-block invalid-feedback"
+              component="span"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Field name="mail_contacto" type="text" placeholder="Email de contacto"
+                className="form-control" />
+            <ErrorMessage
+              name="email"
+              className="d-block invalid-feedback"
+              component="span"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Field name="contrasenia" type="text" placeholder="Contraseña"
+                className="form-control" />
+            <ErrorMessage
+              name="email"
+              className="d-block invalid-feedback"
+              component="span"
+            />
+          </FormGroup>
+
+          <Button variant="danger" size="lg"
             block="block" type="submit">
             {props.children}
           </Button>

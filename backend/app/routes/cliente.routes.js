@@ -4,6 +4,5 @@ module.exports = app => {
 
     router.post('/', cliente.crearCliente);
     router.get('/all', cliente.obtenerClientes);
-    router.patch("/new-column", cliente.crearColumnaTicketsVigentes);
     app.use('/api/clientes', router);
   };
