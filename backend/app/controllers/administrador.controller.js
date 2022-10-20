@@ -7,8 +7,10 @@ const Evento = db.evento;
 const Ticket = db.ticket;
 const Sequelize = db.Sequelize;
 
+
 //para crear un cliente
 exports.crearAdministrador = async (req, res) => {
+
 
     if(!req.body.rut || !req.body.nombre || !req.body.primerApellido || !req.body.primerApellido || !req.body.segundoApellido || 
         !req.body.contrasenia || !req.body.confirmarContrasenia){
