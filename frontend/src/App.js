@@ -25,15 +25,22 @@ const App = () => {
           <Navbar bg="dark" variant="dark">
             <Container>
               <Navbar.Brand>
-                i-Tickets
+                i-Ticket
               </Navbar.Brand>
   
               <Nav className="justify-content-end">
 
-              <Nav>
+                <Nav>
                   <Link to={"/crear-cliente"} 
                     className="nav-link">
                     Inicio
+                  </Link>
+                </Nav>
+
+                <Nav>
+                  <Link to={"/crear-cliente"} 
+                    className="nav-link">
+                    Eventos
                   </Link>
                 </Nav>
 
@@ -62,7 +69,7 @@ const App = () => {
             <Col md={12}>
               <div className="wrapper">
                 <Switch>
-                  <Route exact path="/" component={ClientList} />
+                  <Route exact path="/" component={CreateClient} />
                   <Route path="/crear-cliente" component={CreateClient} />
                   <Route path="/edit-client/:id" component={EditClient} />
                   <Route path="/client-list" component={ClientList} />
