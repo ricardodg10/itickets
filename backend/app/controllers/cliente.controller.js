@@ -8,7 +8,7 @@ const Op = db.Sequelize.Op;
 //para crear un cliente
 exports.crearCliente = async (req, res) => {
 
-    if(!req.body.rut || !req.body.nombre || !req.body.primerApellido || !req.body.primerApellido || !req.body.segundoApellido || 
+    if(!req.body.rut || !req.body.nombre || !req.body.primerApellido || !req.body.segundoApellido || 
         !req.body.contrasenia || !req.body.confirmarContrasenia || !req.body.numeroContacto || !req.body.mailContacto){
 
         return res.status(400).send({

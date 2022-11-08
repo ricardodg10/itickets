@@ -7,14 +7,18 @@ import "bootstrap/dist/css/bootstrap.css";
   
 // Import Custom CSS
 import "./App.css";
+import 'react-calendar/dist/Calendar.css';
 
 // Import from react-router-dom
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 // Import other React Component
 import CreateClient from "./Components/create-client.component";
-import EditClient from "./Components/edit-client.component";
 import ClientList from "./Components/client-list.component";
+import CreateAdmin from "./Components/create-administrator.component";
+import AdminList from "./Components/admin-list.component";
+import CreateEvent from "./Components/create-event.component";
+import EventList from "./Components/event-list.component";
 
 // App Component
 const App = () => {
@@ -31,7 +35,7 @@ const App = () => {
               <Nav className="justify-content-end">
 
                 <Nav>
-                  <Link to={"/crear-cliente"} 
+                  <Link to={"/"} 
                     className="nav-link">
                     Inicio
                   </Link>
@@ -40,25 +44,43 @@ const App = () => {
                 <Nav>
                   <Link to={"/crear-cliente"} 
                     className="nav-link">
-                    Eventos
-                  </Link>
-                </Nav>
-
-                <Nav>
-                  <Link to={"/crear-cliente"} 
-                    className="nav-link">
-                    Crear cliente
+                    Registro (Cliente)
                   </Link>
                 </Nav>
   
                 <Nav>
                   <Link to={"/client-list"} 
                     className="nav-link">
-                    Lista de clientes
+                    Clientes
                   </Link>
                 </Nav>
 
-                
+                <Nav>
+                  <Link to={"/crear-admin"} 
+                    className="nav-link">
+                    Registro (Administrador)
+                  </Link>
+                </Nav>
+
+                <Nav>
+                  <Link to={"/admin-list"} 
+                    className="nav-link">
+                    Administradores
+                  </Link>
+                </Nav>
+
+                <Nav>
+                  <Link to={"/crear-evento"} 
+                    className="nav-link">
+                    Crear evento
+                  </Link>
+                </Nav>
+                <Nav>
+                  <Link to={"/listar-eventos"} 
+                    className="nav-link">
+                    Eventos
+                  </Link>
+                </Nav>
               </Nav>
             </Container>
           </Navbar>
@@ -69,10 +91,13 @@ const App = () => {
             <Col md={12}>
               <div className="wrapper">
                 <Switch>
-                  <Route exact path="/" component={CreateClient} />
+                  <Route exact path="/"/>
                   <Route path="/crear-cliente" component={CreateClient} />
-                  <Route path="/edit-client/:id" component={EditClient} />
                   <Route path="/client-list" component={ClientList} />
+                  <Route path="/crear-admin" component={CreateAdmin} />
+                  <Route path="/admin-list" component={AdminList} />
+                  <Route path="/crear-evento" component={CreateEvent} />
+                  <Route path="/listar-eventos" component={EventList} />
                 </Switch>
               </div>
             </Col>

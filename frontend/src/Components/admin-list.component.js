@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import ClientDataService from "../Services/client.service";
+import AdminDataService from "../Services/administrador.service";
 import { Table } from "react-bootstrap";
-import ClientTableRow from "./ClientTableRow";
+import AdminTableRow from "./AdminTableRow";
   
-const ClientList = () => {
-  const [client, setClient] = useState([]);
+const AdminList = () => {
+  const [administrator, setAdmin] = useState([]);
   
   useEffect(() => {
-    ClientDataService.getAll()
+    AdminDataService.mostrarAdmins()
       .then(({ data }) => {
         console.log(data);
-        setClient(data);
+        setAdmin(data);
       })
       .catch((error) => {
         console.log(error);
@@ -18,8 +18,8 @@ const ClientList = () => {
   }, []);
   
   const DataTable = () => {
-    return client.map((res, i) => {
-      return <ClientTableRow obj={res} key={i} />;
+    return administrator.map((res, i) => {
+      return <AdminTableRow obj={res} key={i} />;
     });
   };
   
@@ -32,8 +32,7 @@ const ClientList = () => {
             <th>Nombre</th>
             <th>Primer apellido</th>
             <th>Segundo apellido</th>
-            <th>Número de contacto</th>
-            <th>Mail de contacto</th>
+            <th>Años de experiencia</th>
           </tr>
         </thead>
         <tbody>{DataTable()}</tbody>
@@ -42,4 +41,4 @@ const ClientList = () => {
   );
 };
   
-export default ClientList;
+export default AdminList;

@@ -143,6 +143,21 @@ exports.eliminarEvento = async (req, res) => {
     }
 };
 
+exports.obtenerEventos = async (req, res) => {
+    try{
+        let events = await Evento.findAll({
+            attributes: ['nombre_evento', 'tipo_evento', 'precio_evento', 'direccion_evento', 'region_evento', 'ciudad_evento', 'dia_evento', 'mes_evento', 'anio_evento', 'hora_evento']
+        })
+        res.send(events)
+        return;
+    }catch{
+        res.status(400).send({
+            message: "Error al obtener los eventos",
+        });
+        return;
+    }
+};
+
 //buscar eventos con filtros obligatorios 
 exports.buscarEvento = async (req, res) => {
     
@@ -202,7 +217,8 @@ exports.buscarEvento = async (req, res) => {
         });
         return;
     }
-};
+}
+
 
 
 

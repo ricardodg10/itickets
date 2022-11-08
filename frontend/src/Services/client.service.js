@@ -5,7 +5,7 @@ const crearCliente = data => {
 };
 
 const getAll = () => {
-  return http.get("/clients");
+  return http.get("/clientes/all");
 };
 
 const get = id => {

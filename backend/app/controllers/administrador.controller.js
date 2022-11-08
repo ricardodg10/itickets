@@ -111,37 +111,32 @@ exports.obtenerAdministradores = async (req, res) => {
 exports.obtenerAdminEventosTickets = async (req, res) => {
  
         Usuario.findAll({
+            attributes: ['primer_nombre','primer_apellido','segundo_apellido'],
             include: [
                 {
                     model: Administrador,
+                    attributes: ['userRut'],
                     required: true,
                     include: [
                         {
                         model: Evento,
                         required: true,
-                        attributes: {
-                            include: [[Sequelize.fn("COUNT", Sequelize.col("id_ticket")), "cantidad_tickets"]],
-                            /*exclude: ['tipo_evento', 'direccion_evento', 'ciudad_evento', 'region_evento', 'dia_evento', 'mes_evento', 'anio_evento', 
-                            'hora_evento', 'precio_evento', 'descripcion_evento', 'createdAt', 'updatedAt', 'administratorUserRut']*/
-                        },
-                        include: [ 
+                        attributes: ['nombre_evento', [Sequelize.fn('COUNT', Sequelize.col('eventNombreEvento')), 'cantidad_tickets']],
+                        group: ['Ticket.eventNombreEvento'],
+                        include: [
                             {
+                                attributes: [], 
                                 model: Ticket,
-                                required: true,
-                                attributes : [],
-                                /*where: { 
-                                    'nombre_evento': 'eventNombreEvento'
-                                },*/
                             }
                         ],
+                        
                         }
                     ],
                     
-                    attributes: ['userRut'],
   
                 }
             ],
-            attributes: ['primer_nombre','primer_apellido','segundo_apellido'],
+            
         }).then(result => {
             res.send(result)
         }).catch(err => {
